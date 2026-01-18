@@ -4,7 +4,7 @@ const employees = [
         name: "Benno Bertsch",
         role: "Team Devices, PO BlackBerry UEM",
         image: "benno.png",
-        funFact: "Superkraft: Repariert Drucker durch bloßes Anstarren.",
+        funFact: "Wirft gern mit gefiederten Bällen.",
         textCard: "Benno Bertsch"
     },
     {
@@ -12,7 +12,7 @@ const employees = [
         name: "Lars Frese",
         role: "Team Cloud Directory and Security",
         image: "lars.png",
-        funFact: "Hat noch nie einen Tippfehler übersehen, nicht mal in WhatsApp.",
+        funFact: "Unser Mann im Skyper",
         textCard: "Lars Frese"
     },
     {
@@ -20,7 +20,7 @@ const employees = [
         name: "Viktor Weiss",
         role: "Team Cloud Directory and Security, PO Entra",
         image: "viktor.png",
-        funFact: "Kennt jeden Flughafen-Code in Europa auswendig.",
+        funFact: "Aus dem Ländle nach Connewitz.",
         textCard: "Viktor Weiss"
     },
     {
@@ -28,7 +28,7 @@ const employees = [
         name: "Mario Bramer",
         role: "Team Cloud Directory and Security",
         image: "mario.png",
-        funFact: "Kann am Händedruck erkennen, ob jemand Kaffee oder Tee trinkt.",
+        funFact: "Das Küken im IT115-Stall, auch wenn er nicht danach aussieht.",
         textCard: "Mario Bramer"
     },
     {
@@ -44,7 +44,7 @@ const employees = [
         name: "Roland W. Schulz",
         role: "Team Devices",
         image: "roland.png",
-        funFact: "Kennt jeden Flughafen-Code in Europa auswendig.",
+        funFact: "Arbeitet bis zum jüngsten Tag.",
         textCard: "Roland W. Schulz"
     },
     {
@@ -52,7 +52,7 @@ const employees = [
         name: "Horst Krause",
         role: "Team Devices",
         image: "horst.png",
-        funFact: "Kennt jeden Flughafen-Code in Europa auswendig.",
+        funFact: "Unser Mann für alles was APP heißt.",
         textCard: "Horst Krause"
     },
     {
@@ -60,7 +60,7 @@ const employees = [
         name: "Michael Seyer",
         role: "Teamleiter und PO Purview",
         image: "michael.png",
-        funFact: "Kennt jeden Flughafen-Code in Europa auswendig.",
+        funFact: "Kann auch Kaffee.",
         textCard: "Michael Seyer"
     },
     {
@@ -68,7 +68,7 @@ const employees = [
         name: "Florian Grund",
         role: "Sicherheits-Architekt",
         image: "florian.png",
-        funFact: "Kennt jeden Flughafen-Code in Europa auswendig.",
+        funFact: "Ist zur Sicherheit dabei.",
         textCard: "Florian Grund"
     },
     {
@@ -76,7 +76,7 @@ const employees = [
         name: "Nicolas Wotruba",
         role: "Team Devices, Externer Berater",
         image: "nico.png",
-        funFact: "Kennt jeden Flughafen-Code in Europa auswendig.",
+        funFact: "Das externe Urgestein.",
         textCard: "Nicolas Wotruba"
     },
     {
@@ -84,7 +84,7 @@ const employees = [
         name: "Alexander Zur",
         role: "Team Cloud Directory and Security, Externer Berater",
         image: "alex.png",
-        funFact: "Kennt jeden Flughafen-Code in Europa auswendig.",
+        funFact: "Kann auch Kuchen.",
         textCard: "Alexander Zur"
     },
     {
@@ -92,7 +92,7 @@ const employees = [
         name: "Anna Hohmann",
         role: "Scrum Master, Externe Beraterin",
         image: "alex.png",
-        funFact: "Kennt jeden Flughafen-Code in Europa auswendig.",
+        funFact: "Bringt Ordnung in die Männerwirtschaft",
         textCard: "Anna Hohmann"
     },
 ];
