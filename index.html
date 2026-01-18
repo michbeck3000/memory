@@ -280,6 +280,19 @@
         </div>
     </div>
 
+    <div class="modal" id="winModal">
+        <div class="modal-content">
+            <h2 style="font-size: 2rem;">🎉</h2>
+            <h2>Herzlichen Glückwunsch!</h2>
+            <p>Du hast das ganze Team gefunden!</p>
+            <div style="margin: 20px 0; background: #f9f9f9; padding: 15px; border-radius: 10px;">
+                <p style="margin: 5px 0;">⏱️ Zeit: <b id="winTime"></b></p>
+                <p style="margin: 5px 0;">🔄 Züge: <b id="winMoves"></b></p>
+            </div>
+            <button class="close-btn" onclick="restartGame()">Nochmal spielen</button>
+        </div>
+    </div>
+
     <script>
         // --- DATEN-BEREICH ---
         // employees array is now loaded from employees.js
@@ -476,9 +489,16 @@
             document.getElementById('matchModal').style.display = 'none';
             if (matchesFound === totalPairs) {
                 setTimeout(() => {
-                    if (confirm(`🎉 Glückwunsch!\nDu hast das Team in ${timerDisplay.textContent} und ${moves} Zügen gefunden!\n\nNochmal spielen?`)) initGame();
+                    document.getElementById('winTime').textContent = timerDisplay.textContent;
+                    document.getElementById('winMoves').textContent = moves;
+                    document.getElementById('winModal').style.display = 'flex';
                 }, 500);
             }
+        }
+
+        function restartGame() {
+            document.getElementById('winModal').style.display = 'none';
+            initGame();
         }
 
         function applySettings() {
