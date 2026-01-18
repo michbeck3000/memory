@@ -491,7 +491,7 @@
         function checkWinCondition() {
             if (matchesFound === totalPairs) {
                 clearInterval(timerInterval);
-                setTimeout(() => { triggerConfetti(); soundEffects.win(); }, 300);
+                // Confetti & Sound nun erst im Modal (closeModal)
             }
         }
 
@@ -520,6 +520,8 @@
                     document.getElementById('winTime').textContent = timerDisplay.textContent;
                     document.getElementById('winMoves').textContent = moves;
                     document.getElementById('winModal').style.display = 'flex';
+                    triggerConfetti();
+                    soundEffects.win();
                 }, 500);
             }
         }
