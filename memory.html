@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team-Memory: Wer macht was?</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --bg: #ecf0f1;
+            --card-bg: #fff;
+            --text-color: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100svh;
+            margin: 0;
+            padding: 20px;
+            color: var(--primary);
+            user-select: none;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        /* HUD */
+        .hud {
+            display: flex;
+            gap: 20px;
+            font-size: 1.2rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+            background: white;
+            padding: 10px 25px;
+            border-radius: 50px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .hud b {
+            color: var(--secondary);
+        }
+
+        /* Spielfeld Grid */
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(var(--tile-size, 130px), 1fr));
+            gap: 15px;
+            width: 100%;
+            max-width: 800px;
+            perspective: 1000px;
+            margin-bottom: 40px;
+        }
+
+        /* Karten */
+        .card {
+            background-color: transparent;
+            aspect-ratio: 1 / 1;
+            cursor: pointer;
+            position: relative;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+        }
+
+        .card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card.matched .card-inner {
+            transform: rotateY(180deg);
+            box-shadow: 0 0 15px var(--secondary);
+            border: 2px solid var(--secondary);
+        }
+
+        /* Vorder- und Rückseite */
+        .card-front,
+        .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            padding: 6px;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .card-front {
+            background-color: var(--primary);
+            color: white;
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+
+        .card-back {
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            transform: rotateY(180deg);
+            border: 1px solid #ddd;
+            flex-direction: column;
+            padding: 4px;
+        }
+
+        /* BILD FIX AUF KARTE */
+        .card-img {
+            width: 100%;
+            height: 80%;
+            object-fit: contain;
+            object-position: center bottom;
+            border-radius: 8px 8px 0 0;
+            display: block;
+            background-color: transparent;
+        }
+
+        .card-name {
+            height: 20%;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: bold;
+            line-height: 1;
+            padding-top: 4px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .card-text {
+            font-size: 0.95rem;
+            font-weight: bold;
+            line-height: 1.2;
+            margin-bottom: 5px;
+        }
+
+        .card-role {
+            font-size: 0.75rem;
+            color: #777;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            width: 100%;
+            max-width: 450px;
+            animation: popIn 0.3s ease;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        /* BILD IM MODAL (Treffermeldung) - UPDATE: Kein Rahmen, kein Schatten, eckig */
+        .modal-avatar {
+            width: 150px;
+            height: 150px;
+            /* border-radius: 15px;  <-- ENTFERNT */
+            object-fit: contain;
+            margin-bottom: 15px;
+            /* box-shadow: 0 4px 10px rgba(0,0,0,0.1); <-- ENTFERNT */
+            background-color: #f9f9f9;
+            /* Fallback Hintergrund falls Bild transparent */
+        }
+
+        .modal h2 {
+            color: var(--secondary);
+            margin-top: 0;
+            margin-bottom: 5px;
+        }
+
+        .fun-fact {
+            font-style: italic;
+            color: var(--accent);
+            margin: 20px 0;
+            font-size: 1.1rem;
+            line-height: 1.4;
+        }
+
+        .close-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.2s;
+        }
+
+        .close-btn:hover {
+            background: var(--secondary);
+        }
+
+        @keyframes popIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        html,
+        body {
+            touch-action: pan-y;
+            -webkit-tap-highlight-color: transparent;
+        }
+    </style>
+    <script src="settings.js"></script>
+    <script src="employees.js"></script>
+</head>
+
+<body>
+
+    <h1>🚀 Team Memory</h1>
+
+    <div class="hud">
+        <span>⏱️ <b id="timer">00:00</b></span>
+        <span>🔄 <b id="moves">0</b></span>
+    </div>
+
+    <div class="game-grid" id="gameGrid"></div>
+
+    <div class="modal" id="matchModal">
+        <div class="modal-content">
+            <img src="" alt="Mitarbeiter" class="modal-avatar" id="modalImage">
+            <h2 id="modalName">Name</h2>
+            <p id="modalRole" style="font-weight:bold; color: #555;">Rolle</p>
+            <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
+            <p class="fun-fact" id="modalFact">Fun Fact...</p>
+            <button class="close-btn" onclick="closeModal()">Weiter geht's!</button>
+        </div>
+    </div>
+
+    <script>
+        // --- DATEN-BEREICH ---
+        // employees array is now loaded from employees.js
+
+        // --- AUDIO ENGINE ---
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx;
+
+        function initAudio() {
+            if (!audioCtx) audioCtx = new AudioContext();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+        }
+
+        function playTone(freq, type, duration, delay = 0) {
+            if (!audioCtx) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.value = freq;
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            const now = audioCtx.currentTime + delay;
+            gain.gain.setValueAtTime(0.1, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+            osc.start(now);
+            osc.stop(now + duration);
+        }
+
+        const soundEffects = {
+            flip: () => { initAudio(); playTone(400, 'sine', 0.1); },
+            match: () => {
+                initAudio();
+                playTone(523.25, 'sine', 0.3, 0);
+                playTone(659.25, 'sine', 0.3, 0.1);
+                playTone(783.99, 'sine', 0.4, 0.2);
+            },
+            win: () => {
+                initAudio();
+                playTone(523.25, 'triangle', 0.2, 0);
+                playTone(659.25, 'triangle', 0.2, 0.15);
+                playTone(783.99, 'triangle', 0.2, 0.3);
+                playTone(1046.50, 'triangle', 0.6, 0.45);
+            }
+        };
+
+        // --- GAME LOGIC ---
+        const gameGrid = document.getElementById('gameGrid');
+        const timerDisplay = document.getElementById('timer');
+        const movesDisplay = document.getElementById('moves');
+
+        let cardsArray = [];
+        let hasFlippedCard = false;
+        let lockBoard = false;
+        let firstCard, secondCard;
+        let moves = 0;
+        let timerInterval;
+        let seconds = 0;
+        let matchesFound = 0;
+        let totalPairs = employees.length;
+        let gameStarted = false;
+
+        function initGame() {
+            moves = 0; seconds = 0; matchesFound = 0; gameStarted = false;
+            totalPairs = employees.length;
+            movesDisplay.textContent = moves;
+            timerDisplay.textContent = "00:00";
+            clearInterval(timerInterval);
+            gameGrid.innerHTML = '';
+            cardsArray = [];
+
+            employees.forEach(emp => {
+                cardsArray.push({
+                    ...emp,
+                    type: 'image',
+                    content: `<img src="${emp.image}" class="card-img" alt="${emp.name}"><div class="card-name">${emp.name}</div>`
+                });
+                cardsArray.push({
+                    ...emp,
+                    type: 'text',
+                    content: `<div class="card-text">${emp.textCard}</div><div class="card-role">${emp.role}</div>`
+                });
+            });
+
+            cardsArray.sort(() => 0.5 - Math.random());
+
+            cardsArray.forEach(item => {
+                const card = document.createElement('div');
+                card.classList.add('card');
+                card.dataset.id = item.id;
+                card.innerHTML = `
+                <div class="card-inner">
+                    <div class="card-front">🚀</div>
+                    <div class="card-back">${item.content}</div>
+                </div>`;
+                card.addEventListener('click', flipCard);
+                gameGrid.appendChild(card);
+            });
+        }
+
+        function startTimer() {
+            if (gameStarted) return;
+            gameStarted = true;
+            initAudio();
+            timerInterval = setInterval(() => {
+                seconds++;
+                const mins = Math.floor(seconds / 60);
+                const secs = seconds % 60;
+                timerDisplay.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        function flipCard() {
+            if (lockBoard) return;
+            if (this === firstCard) return;
+            startTimer();
+            soundEffects.flip();
+            this.classList.add('flipped');
+
+            if (!hasFlippedCard) {
+                hasFlippedCard = true; firstCard = this; return;
+            }
+            secondCard = this;
+            incrementMoves();
+            checkForMatch();
+        }
+
+        function checkForMatch() {
+            let isMatch = firstCard.dataset.id === secondCard.dataset.id;
+            isMatch ? disableCards() : unflipCards();
+        }
+
+        function disableCards() {
+            firstCard.removeEventListener('click', flipCard);
+            secondCard.removeEventListener('click', flipCard);
+            firstCard.classList.add('matched');
+            secondCard.classList.add('matched');
+            matchesFound++;
+            soundEffects.match();
+
+            const empId = firstCard.dataset.id;
+            const empData = employees.find(e => e.id == empId);
+
+            setTimeout(() => {
+                showMatchModal(empData);
+                resetBoard();
+                checkWinCondition();
+            }, 600);
+        }
+
+        function unflipCards() {
+            lockBoard = true;
+            setTimeout(() => {
+                firstCard.classList.remove('flipped');
+                secondCard.classList.remove('flipped');
+                resetBoard();
+            }, 1500);
+        }
+
+        function resetBoard() {
+            [hasFlippedCard, lockBoard] = [false, false];
+            [firstCard, secondCard] = [null, null];
+        }
+
+        function incrementMoves() {
+            moves++; movesDisplay.textContent = moves;
+        }
+
+        function checkWinCondition() {
+            if (matchesFound === totalPairs) {
+                clearInterval(timerInterval);
+                setTimeout(() => { triggerConfetti(); soundEffects.win(); }, 300);
+            }
+        }
+
+        function triggerConfetti() {
+            var duration = 3000;
+            var end = Date.now() + duration;
+            (function frame() {
+                confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 } });
+                confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 } });
+                if (Date.now() < end) requestAnimationFrame(frame);
+            }());
+        }
+
+        function showMatchModal(data) {
+            document.getElementById('modalImage').src = data.image;
+            document.getElementById('modalName').textContent = "Treffer: " + data.name;
+            document.getElementById('modalRole').textContent = data.role;
+            document.getElementById('modalFact').textContent = data.funFact;
+            document.getElementById('matchModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('matchModal').style.display = 'none';
+            if (matchesFound === totalPairs) {
+                setTimeout(() => {
+                    if (confirm(`🎉 Glückwunsch!\nDu hast das Team in ${timerDisplay.textContent} und ${moves} Zügen gefunden!\n\nNochmal spielen?`)) initGame();
+                }, 500);
+            }
+        }
+
+        function applySettings() {
+            if (typeof gameSettings === 'undefined') return;
+
+            // Titel setzen
+            if (gameSettings.gameTitle) {
+                document.title = gameSettings.gameTitle;
+                document.querySelector('h1').textContent = gameSettings.gameTitle;
+            }
+
+            // Grid Einstellungen
+            const grid = document.getElementById('gameGrid');
+            if (gameSettings.tileSize) {
+                document.documentElement.style.setProperty('--tile-size', gameSettings.tileSize);
+            }
+
+            if (gameSettings.gridColumns && gameSettings.gridColumns !== 'auto-fit') {
+                // Falls eine feste Spaltenzahl gewünscht ist
+                grid.style.gridTemplateColumns = `repeat(${gameSettings.gridColumns}, 1fr)`;
+            }
+        }
+
+        applySettings();
+        initGame();
+    </script>
+</body>
+
+</html>
