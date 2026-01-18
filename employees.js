@@ -59,7 +59,7 @@ const employees = [
         id: 8,
         name: "Michael Seyer",
         role: "Teamleiter und PO Purview",
-        image: "Michael.png",
+        image: "michael.png",
         funFact: "Kennt jeden Flughafen-Code in Europa auswendig.",
         textCard: "Michael Seyer"
     },
