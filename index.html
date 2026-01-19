@@ -546,9 +546,14 @@
                 document.documentElement.style.setProperty('--tile-size', gameSettings.tileSize);
             }
 
-            if (gameSettings.gridColumns && gameSettings.gridColumns !== 'auto-fit') {
+            if (gameSettings.gridColumns &&
+                gameSettings.gridColumns !== 'auto-fit' &&
+                gameSettings.gridColumns !== 'auto-fill') {
                 // Falls eine feste Spaltenzahl gewünscht ist
                 grid.style.gridTemplateColumns = `repeat(${gameSettings.gridColumns}, 1fr)`;
+            } else {
+                // WICHTIG: Inline-Style entfernen, damit CSS (mit auto-fit) greift!
+                grid.style.gridTemplateColumns = '';
             }
         }
 
