@@ -84,7 +84,7 @@ const employees = [
         name: "Alexander Zur",
         role: "Team Cloud Directory and Security, Externer Berater",
         image: "alex.png",
-        funFact: "Kann auch Kuchen.",
+        funFact: "Egal was hier geschrieben wird - Viktor findet einen Kommentar dazu 😄",
         textCard: "Alexander Zur"
     },
     {
