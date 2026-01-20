@@ -12,7 +12,7 @@ const employees = [
         name: "Lars Frese",
         role: "Team Cloud Directory and Security",
         image: "lars.png",
-        funFact: "Unser Mann im Skyper",
+        funFact: "Unser Mann im Skyper.",
         textCard: "Lars Frese"
     },
     {
@@ -28,7 +28,7 @@ const employees = [
         name: "Mario Bramer",
         role: "Team Cloud Directory and Security",
         image: "mario.png",
-        funFact: "Das Küken im IT115-Stall, auch wenn er nicht danach aussieht.",
+        funFact: "Repariert Dinge, indem er sie aus- und wieder einschaltet.",
         textCard: "Mario Bramer"
     },
     {
