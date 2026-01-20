@@ -52,7 +52,7 @@ const employees = [
         name: "Horst Krause",
         role: "Team Devices",
         image: "horst.png",
-        funFact: "Unser Mann für alles was APP heißt.",
+        funFact: "Hat für alles eine App.",
         textCard: "Horst Krause"
     },
     {
