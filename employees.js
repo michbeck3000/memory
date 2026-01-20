@@ -91,8 +91,8 @@ const employees = [
         id: 12,
         name: "Anna Hohmann",
         role: "Scrum Master, Externe Beraterin",
-        image: "alex.png",
-        funFact: "Bringt Ordnung in die Männerwirtschaft",
+        image: "anna.png",
+        funFact: "Spielte im Theater Agatha Christies Mörderin.",
         textCard: "Anna Hohmann"
     },
 ];
